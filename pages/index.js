@@ -8,7 +8,6 @@ import LargeCard from '@/components/LargeCard'
 import Footer from '@/components/Footer'
 
 export default function Home({ exploreData, cardsData }) {
-  console.log(cardsData)
   return (
     <div className="">
       <Head>
@@ -23,7 +22,7 @@ export default function Home({ exploreData, cardsData }) {
           <h2 className="text-4xl font-semibold pb-5">Explore Nearby</h2>
 
           {/* Pull exploreData from server - API endpoints */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {exploreData.map((item) => (
               <SmallCard
                 key={uuidv4()}
@@ -32,16 +31,16 @@ export default function Home({ exploreData, cardsData }) {
                 distance={item.distance}
               />
             ))}
-          </div>
+          </div> */}
         </section>
 
         <section>
           <h2 className="text-4xl font-semibold py-8">Live Anywhere</h2>
-          <div className="flex overflow-scroll space-x-3 scrollbar-hide p-3 -ml-3">
+          {/* <div className="flex overflow-scroll space-x-3 scrollbar-hide p-3 -ml-3">
             {cardsData.map((item) => (
               <MediumCard key={uuidv4()} img={item.img} title={item.title} />
             ))}
-          </div>
+          </div> */}
         </section>
 
         <LargeCard
@@ -57,19 +56,19 @@ export default function Home({ exploreData, cardsData }) {
   )
 }
 
-export async function getStaticProps() {
-  const exploreData = await fetch(
-    'http://localhost:3000/api/explore-data'
-  ).then((res) => res.json())
+// export async function getStaticProps() {
+//   const exploreData = await fetch(
+//     `${process.env.NEXT_PUBLIC_BASE_URL}/api/explore-data`
+//   ).then((res) => res.json())
 
-  const cardsData = await fetch('http://localhost:3000/api/cards-data').then(
-    (res) => res.json()
-  )
+//   const cardsData = await fetch(
+//     `${process.env.NEXT_PUBLIC_BASE_URL}/api/cards-data`
+//   ).then((res) => res.json())
 
-  return {
-    props: {
-      exploreData,
-      cardsData,
-    },
-  }
-}
+//   return {
+//     props: {
+//       exploreData,
+//       cardsData,
+//     },
+//   }
+// }
