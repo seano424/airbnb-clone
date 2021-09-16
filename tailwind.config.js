@@ -6,7 +6,9 @@ module.exports = {
     extend: {},
   },
   variants: {
-    extend: {},
+    extend: {
+      backgroundColor: ['group-focus'],
+    },
   },
   plugins: [require('tailwind-scrollbar-hide')],
 }
