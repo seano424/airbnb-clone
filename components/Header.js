@@ -9,22 +9,30 @@ import {
   UserCircleIcon,
   UsersIcon,
 } from '@heroicons/react/solid'
-import { ClockIcon, ChevronRightIcon } from '@heroicons/react/outline'
+import {
+  ClockIcon,
+  ChevronRightIcon,
+  PlusCircleIcon,
+  MinusCircleIcon,
+} from '@heroicons/react/outline'
 import 'react-date-range/dist/styles.css' // main style file
 import 'react-date-range/dist/theme/default.css'
 import { DateRangePicker } from 'react-date-range'
 import { DateRange } from 'react-date-range'
 
 import useWindowSize from 'hooks/useWindowSize'
+import useHandleClickOutside from 'hooks/useHandleClickOutside'
+import Guests from './Guests'
 
 function Header() {
   const [atTop, setAtTop] = useState(true)
+  const [infoBar, setInfoBar] = useState(false)
+  const [checkShow, setCheckShow] = useState(false)
   const [locationShow, setLocationShow] = useState(false)
+  const [guestsShow, setGuestsShow] = useState(true)
   const [checkInOutShow, setCheckInOutShow] = useState(false)
-  const [searchInput, setSearchInput] = useState('')
   const [startDate, setStartDate] = useState(new Date())
   const [endDate, setEndDate] = useState(new Date())
-  const [numberOfGuests, setNumberOfGuests] = useState(1)
   const [bgChange, setBgChange] = useState(false)
 
   const [checkInDateRange, setCheckInDateRange] = useState([
@@ -37,33 +45,92 @@ function Header() {
 
   const { pathname } = useRouter()
   const searchBarRef = useRef()
+  const guestsRef = useRef()
   const locationRef = useRef()
   const checkInOutRef = useRef()
 
   const size = useWindowSize()
   const smallSize = size.width < 640
 
-  const handleClickOutside = (event) => {
-    if (
-      locationRef.current &&
-      !locationRef.current.contains(event.target) &&
-      searchBarRef.current &&
-      !searchBarRef.current.contains(event.target)
-    ) {
-      setLocationShow(false)
+  useEffect(() => {
+    document.addEventListener(
+      'click',
+      (event) =>
+        useHandleClickOutside(
+          locationRef,
+          searchBarRef,
+          setLocationShow,
+          event
+        ),
+      true
+    )
+    return () => {
+      document.removeEventListener(
+        'click',
+        (event) =>
+          useHandleClickOutside(
+            locationRef,
+            searchBarRef,
+            setLocationShow,
+            event
+          ),
+        true
+      )
     }
-  }
+  }, [])
 
   useEffect(() => {
-    document.addEventListener('click', handleClickOutside, true)
+    document.addEventListener(
+      'click',
+      (event) =>
+        useHandleClickOutside(
+          checkInOutRef,
+          searchBarRef,
+          setCheckInOutShow,
+          event
+        ),
+      true
+    )
     return () => {
-      document.removeEventListener('click', handleClickOutside, true)
+      document.removeEventListener(
+        'click',
+        (event) =>
+          useHandleClickOutside(
+            checkInOutRef,
+            searchBarRef,
+            setCheckInOutShow,
+            event
+          ),
+        true
+      )
     }
-  })
+  }, [])
+
+  useEffect(() => {
+    document.addEventListener(
+      'click',
+      (event) =>
+        useHandleClickOutside(guestsRef, searchBarRef, setGuestsShow, event),
+      true
+    )
+    return () => {
+      document.removeEventListener(
+        'click',
+        (event) =>
+          useHandleClickOutside(guestsRef, searchBarRef, setGuestsShow, event),
+        true
+      )
+    }
+  }, [])
 
   useEffect(() => {
     const onScroll = (e) => {
-      window.pageYOffset === 0 ? setAtTop(true) : setAtTop(false)
+      if (window.pageYOffset === 0) {
+        setAtTop(true)
+        setInfoBar(false)
+      } else {
+        setAtTop(false)
+      }
     }
     window.addEventListener('scroll', onScroll)
 
@@ -85,12 +152,23 @@ function Header() {
   const handleLocationClick = () => {
     setLocationShow(true)
     setCheckInOutShow(false)
+    setCheckShow(false)
+    setGuestsShow(false)
+  }
+
+  const handleGuestsClick = () => {
+    setLocationShow(false)
+    setCheckInOutShow(false)
+    setCheckShow(false)
+    setGuestsShow(true)
   }
 
   const handleCheckInOutClick = () => {
     setLocationShow(false)
+    setCheckShow(true)
     setCheckInOutShow(true)
     setBgChange(!bgChange)
+    setGuestsShow(false)
   }
 
   const handleDateChange = (item) => {
@@ -101,11 +179,24 @@ function Header() {
     setBgChange(_.isEqual(item, [0, 1]))
   }
 
+  const handleChangeBar = () => {
+    setAtTop(true)
+    setInfoBar(true)
+  }
+
+  const handleMinus = (setter, state) => {
+    state > 0 && setter(state - 1)
+  }
+
+  const handlePlus = (setter, state) => {
+    setter(state + 1)
+  }
+
   return (
     <div className="flex flex-col sticky top-0 z-50">
       <header
         className={`${
-          atTop && 'bg-opacity-0'
+          atTop && !infoBar && 'bg-opacity-0'
         } w-full top-0 z-50 flex justify-center md:grid grid-cols-3 p-5 md:px-10 bg-white transition duration-500 ease-out`}
       >
         {/* left */}
@@ -126,30 +217,29 @@ function Header() {
               atTop && pathname === '/'
                 ? 'bg-white md:hidden w-[500px]'
                 : 'bg-gray-50 w-[500px] md:w-full'
-            } flex flex-row-reverse md:flex-row items-center justify-center  relative md:border-2 rounded-full p-3 md:py-4 md:shadow-sm transition duration-200 min-w-screen lg:w-9/12 lg:mx-auto `}
+            } flex flex-row-reverse md:flex-row items-center justify-center  relative md:border-2 rounded-full p-3 md:py-4 md:shadow-sm transition duration-200 min-w-screen lg:w-9/12 lg:mx-auto cursor-pointer`}
           >
-            <input
-              className="md:px-10 md:text-left bg-transparent outline-none  text-sm text-gray-600 placeholder-gray-700 font-semibold "
-              placeholder={`${
-                smallSize ? 'Where are you going?' : 'Start your search'
-              }`}
-              type="text"
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-            />
+            <button onClick={handleChangeBar}>
+              {smallSize ? 'Where are you going?' : 'Start your search'}
+            </button>
+
             <SearchIcon className="md:absolute right-1 rounded-full h-10 p-2 md:text-white text-primary md:bg-primary cursor-pointer" />
           </div>
 
           <div
-            className={`hidden relative ${
+            className={`relative ${
               atTop && pathname === '/' ? 'xl:inline-flex' : 'hidden'
+            } ${
+              infoBar && 'text-gray-500'
             } pl-10 py-3 space-x-4 items-center justify-center text-gray-200 cursor-pointer`}
           >
             <h2 className="border-b">Places to stay</h2>
             <h2>Experiences</h2>
             <h2>Online Experiences</h2>
           </div>
+
           {/* bar for location, check in, check out, and dates */}
+          {/* atTop && */}
           {atTop && pathname === '/' && (
             <div
               ref={searchBarRef}
@@ -170,12 +260,12 @@ function Header() {
                 <div
                   onClick={handleCheckInOutClick}
                   className={`px-5 py-3 bg-white group hover:bg-gray-100 rounded-full cursor-pointer ${
-                    bgChange && 'bg-gray-100'
+                    bgChange && checkShow && 'bg-gray-100'
                   }`}
                 >
                   <h4
                     className={`group-hover:bg-gray-100 ${
-                      bgChange && 'bg-gray-100'
+                      bgChange && checkShow && 'bg-gray-100'
                     }`}
                   >
                     Check in
@@ -187,7 +277,7 @@ function Header() {
                 <div
                   onClick={handleCheckInOutClick}
                   className={`px-5 py-3 bg-white group hover:bg-gray-100 rounded-full cursor-pointer ${
-                    !bgChange && 'bg-gray-100'
+                    !bgChange && checkShow && 'bg-gray-100'
                   }`}
                 >
                   <h4 className="group-hover:bg-gray-100">Check out</h4>
@@ -195,7 +285,10 @@ function Header() {
                     Add dates
                   </p>
                 </div>
-                <div className="px-5 py-3 bg-white group hover:bg-gray-100 rounded-full cursor-pointer">
+                <div
+                  onClick={handleGuestsClick}
+                  className="px-5 py-3 bg-white group hover:bg-gray-100 rounded-full cursor-pointer"
+                >
                   <h4 className="group-hover:bg-gray-100">Guests</h4>
                   <p className="outline-none font-light text-gray-500 group-hover:bg-gray-100">
                     Add guests
@@ -203,6 +296,7 @@ function Header() {
                 </div>
                 <SearchIcon className="absolute right-1 top-3 h-10 lg:h-12 md:h-8 rounded-full md:text-white  p-2 md:mx-2 md:bg-primary cursor-pointer" />
               </div>
+
               {/* Location under div */}
               {locationShow && (
                 <div
@@ -269,6 +363,20 @@ function Header() {
                   </div>
                 </div>
               )}
+
+              {/* Guests under div */}
+              {guestsShow && (
+                <div
+                  ref={guestsRef}
+                  className="mt-5 relative flex flex-col items-end justify-end"
+                >
+                  <div className="bg-white p-10 rounded-3xl w-5/12">
+                    <Guests header="Adults" description="Ages 13 or above" />
+                    <Guests header="Children" description="Ages 2-12" />
+                    <Guests header="Infants" description="Under 2" />
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -276,7 +384,9 @@ function Header() {
         {/* right */}
         <div
           className={`hidden md:flex items-center justify-end space-x-4 ${
-            atTop && pathname === '/' ? 'text-white' : 'text-gray-500'
+            atTop && !infoBar && pathname === '/'
+              ? 'text-white'
+              : 'text-gray-500'
           }`}
         >
           <p className="hidden md:inline-flex cursor-pointer">Become a host</p>
@@ -287,35 +397,6 @@ function Header() {
             <UserCircleIcon className="h-6 cursor-pointer" />
           </div>
         </div>
-        {searchInput && (
-          <div className="text-xl fixed z-50 top-24 flex-col items-center w-screen bg-white flex pb-10">
-            <DateRangePicker
-              ranges={[selectionRange]}
-              onChange={handleSelect}
-              minDate={new Date()}
-              rangeColors={['#FF3855']}
-            />
-            <div className="self-start flex items-center justify-between w-full mb-4 px-10 border-b">
-              <h2 className="text-2xl flex-grow font-semibold">
-                Number of Guests
-              </h2>
-              <UsersIcon className="h-5" />
-              <input
-                onChange={(e) => setNumberOfGuests(e.target.value)}
-                value={numberOfGuests}
-                type="number"
-                min={1}
-                className="w-12 pl-2 outline-none text-lg text-primary"
-              />
-            </div>
-            <div className="flex w-full">
-              <button onClick={() => setSearchInput()} className="flex-grow">
-                Cancel
-              </button>
-              <button className="flex-grow text-primary">Search</button>
-            </div>
-          </div>
-        )}
       </header>
     </div>
   )
