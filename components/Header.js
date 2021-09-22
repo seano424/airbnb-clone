@@ -29,7 +29,7 @@ function Header() {
   const [infoBar, setInfoBar] = useState(false)
   const [checkShow, setCheckShow] = useState(false)
   const [locationShow, setLocationShow] = useState(false)
-  const [guestsShow, setGuestsShow] = useState(true)
+  const [guestsShow, setGuestsShow] = useState(false)
   const [checkInOutShow, setCheckInOutShow] = useState(false)
   const [startDate, setStartDate] = useState(new Date())
   const [endDate, setEndDate] = useState(new Date())
@@ -193,11 +193,11 @@ function Header() {
   }
 
   return (
-    <div className="flex flex-col sticky top-0 z-50">
+    <div className="flex flex-col absolute top-0 z-50">
       <header
         className={`${
           atTop && !infoBar && 'bg-opacity-0'
-        } w-full top-0 z-50 flex justify-center md:grid grid-cols-3 p-5 md:px-10 bg-white transition duration-500 ease-out`}
+        } w-screen fixed top-0 z-50 flex justify-center md:grid grid-cols-3 p-5 md:px-10 bg-white transition duration-500 ease-out`}
       >
         {/* left */}
         <div className="relative hidden md:flex items-center h-10 cursor-pointer my-auto">
