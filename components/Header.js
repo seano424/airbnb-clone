@@ -39,6 +39,11 @@ function Header() {
     },
   ])
 
+  useEffect(() => {
+    const input = document.querySelector('input')
+    input?.focus()
+  }, [locationShow])
+
   const { pathname } = useRouter()
   const router = useRouter()
   const searchBarRef = useRef()
@@ -198,8 +203,14 @@ function Header() {
   }
 
   const search = () => {
-    setLocationShow(false)
-    setCheckInOutShow(true)
+    locationValue === ''
+      ? setLocationShow(true)
+      : router.push({
+          pathname: '/search',
+          query: {
+            location: locationValue,
+          },
+        })
   }
 
   return (
@@ -272,6 +283,7 @@ function Header() {
                       locationShow && 'bg-gray-100'
                     } outline-none font-light overflow-ellipsis w-full placeholder-gray-500 group-hover:bg-gray-100`}
                     type="text"
+                    autofocus={true}
                     placeholder="Where are you going?"
                     value={locationValue}
                     onChange={(e) => setLocationValue(e.target.value)}
@@ -320,10 +332,11 @@ function Header() {
                 {/* expandSearchButton */}
                 {/* <SearchIcon className="h-10 lg:h-12 md:h-8 rounded-full md:text-white  p-2 md:mx-2 md:bg-primary cursor-pointer" /> */}
                 <div
+                  onClick={search}
                   ref={searchButtonRef}
                   className={`flex ${
                     expandSearchButton &&
-                    'space-x-2 items-center rounded-full p-3 mr-2 bg-primary text-white'
+                    'space-x-2 items-center rounded-full p-3 mr-2 bg-primary text-white group'
                   }`}
                 >
                   <SearchIcon
