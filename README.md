@@ -4,11 +4,30 @@ This example shows how to use [Tailwind CSS](https://tailwindcss.com/) [(v2.2)](
 
 It uses the new [`Just-in-Time Mode`](https://tailwindcss.com/docs/just-in-time-mode) for Tailwind CSS.
 
+# [Airbnb Clone](https://airbnb-clone-mu-kohl.vercel.app/)
+
+Source code of my airbnb clone ✨
+
 ## Preview
+Check the live version [here](https://airbnb-clone-mu-kohl.vercel.app/) ⚡️
 
-Preview the example live on [StackBlitz](http://stackblitz.com/):
+![home](./public/images/airbnb.png)
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/vercel/next.js/tree/canary/examples/with-tailwindcss)
+## ✨ Features
+
+- Responsive
+- Fast thanks to Next.js and Vercel
+- GitHub CI to build and lint project
+
+## 📦 Made with
+
+- next.js
+- tailwindcss
+- vercel
+- lodash
+- heroicons
+- react date range
+
 
 ## Deploy your own
 
