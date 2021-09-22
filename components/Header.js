@@ -7,17 +7,11 @@ import {
   MenuIcon,
   GlobeAltIcon,
   UserCircleIcon,
-  UsersIcon,
+  LocationMarkerIcon,
 } from '@heroicons/react/solid'
-import {
-  ClockIcon,
-  ChevronRightIcon,
-  PlusCircleIcon,
-  MinusCircleIcon,
-} from '@heroicons/react/outline'
+import { ClockIcon, ChevronRightIcon } from '@heroicons/react/outline'
 import 'react-date-range/dist/styles.css' // main style file
 import 'react-date-range/dist/theme/default.css'
-import { DateRangePicker } from 'react-date-range'
 import { DateRange } from 'react-date-range'
 
 import useWindowSize from 'hooks/useWindowSize'
@@ -26,14 +20,16 @@ import Guests from './Guests'
 
 function Header() {
   const [atTop, setAtTop] = useState(true)
+  const [expandSearchButton, setExpandSearchButton] = useState(true)
   const [infoBar, setInfoBar] = useState(false)
   const [checkShow, setCheckShow] = useState(false)
   const [locationShow, setLocationShow] = useState(false)
+  const [locationValue, setLocationValue] = useState('')
   const [guestsShow, setGuestsShow] = useState(false)
   const [checkInOutShow, setCheckInOutShow] = useState(false)
-  const [startDate, setStartDate] = useState(new Date())
-  const [endDate, setEndDate] = useState(new Date())
   const [bgChange, setBgChange] = useState(false)
+
+  const locationNull = locationValue === ''
 
   const [checkInDateRange, setCheckInDateRange] = useState([
     {
@@ -44,7 +40,9 @@ function Header() {
   ])
 
   const { pathname } = useRouter()
+  const router = useRouter()
   const searchBarRef = useRef()
+  const searchButtonRef = useRef()
   const guestsRef = useRef()
   const locationRef = useRef()
   const checkInOutRef = useRef()
@@ -72,6 +70,33 @@ function Header() {
             locationRef,
             searchBarRef,
             setLocationShow,
+            event
+          ),
+        true
+      )
+    }
+  }, [])
+
+  useEffect(() => {
+    document.addEventListener(
+      'click',
+      (event) =>
+        useHandleClickOutside(
+          searchButtonRef,
+          searchBarRef,
+          setExpandSearchButton,
+          event
+        ),
+      true
+    )
+    return () => {
+      document.removeEventListener(
+        'click',
+        (event) =>
+          useHandleClickOutside(
+            searchButtonRef,
+            searchBarRef,
+            setExpandSearchButton,
             event
           ),
         true
@@ -137,18 +162,6 @@ function Header() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [atTop])
 
-  const handleSelect = (ranges) => {
-    console.log(ranges)
-    setEndDate(ranges.selection.endDate)
-    setStartDate(ranges.selection.startDate)
-  }
-
-  const selectionRange = {
-    startDate,
-    endDate,
-    key: 'selection',
-  }
-
   const handleLocationClick = () => {
     setLocationShow(true)
     setCheckInOutShow(false)
@@ -184,12 +197,9 @@ function Header() {
     setInfoBar(true)
   }
 
-  const handleMinus = (setter, state) => {
-    state > 0 && setter(state - 1)
-  }
-
-  const handlePlus = (setter, state) => {
-    setter(state + 1)
+  const search = () => {
+    setLocationShow(false)
+    setCheckInOutShow(true)
   }
 
   return (
@@ -197,10 +207,13 @@ function Header() {
       <header
         className={`${
           atTop && !infoBar && 'bg-opacity-0'
-        } w-screen fixed top-0 z-50 flex justify-center md:grid grid-cols-3 p-5 md:px-10 bg-white transition duration-500 ease-out`}
+        } w-screen fixed top-0 z-50 flex justify-center md:grid grid-cols-3 p-5 md:px-10 bg-white transition duration-300 ease-out`}
       >
         {/* left */}
-        <div className="relative hidden md:flex items-center h-10 cursor-pointer my-auto">
+        <div
+          onClick={() => router.push('/')}
+          className="relative hidden md:flex items-center h-10 cursor-pointer my-auto"
+        >
           <Image
             src="https://links.papareact.com/qd3"
             layout="fill"
@@ -242,24 +255,31 @@ function Header() {
           {/* atTop && */}
           {atTop && pathname === '/' && (
             <div
+              onClick={() => setExpandSearchButton(true)}
               ref={searchBarRef}
               className="hidden md:inline-flex flex-col absolute top-20 w-[600px] lg:w-[900px] justify-between -left-1/2 "
             >
-              <div className="grid grid-cols-4 text-xs overflow-ellipsis lg:text-base  bg-white rounded-full relative">
+              <div className="flex justify-between items-center text-xs overflow-ellipsis lg:text-base  bg-white rounded-full relative">
                 <div
                   onClick={handleLocationClick}
-                  className="px-8 py-3 bg-white group hover:bg-gray-100 rounded-full cursor-pointer"
+                  className={`${
+                    locationShow && 'bg-gray-100'
+                  } px-8 py-3 bg-white group hover:bg-gray-100 rounded-full cursor-pointer`}
                 >
                   <h4 className="group-hover:bg-gray-100">Location</h4>
                   <input
-                    className="outline-none font-light overflow-ellipsis w-full placeholder-gray-500 group-hover:bg-gray-100"
+                    className={`${
+                      locationShow && 'bg-gray-100'
+                    } outline-none font-light overflow-ellipsis w-full placeholder-gray-500 group-hover:bg-gray-100`}
                     type="text"
                     placeholder="Where are you going?"
+                    value={locationValue}
+                    onChange={(e) => setLocationValue(e.target.value)}
                   />
                 </div>
                 <div
                   onClick={handleCheckInOutClick}
-                  className={`px-5 py-3 bg-white group hover:bg-gray-100 rounded-full cursor-pointer ${
+                  className={`px-10 py-3 bg-white group hover:bg-gray-100 rounded-full cursor-pointer ${
                     bgChange && checkShow && 'bg-gray-100'
                   }`}
                 >
@@ -276,7 +296,7 @@ function Header() {
                 </div>
                 <div
                   onClick={handleCheckInOutClick}
-                  className={`px-5 py-3 bg-white group hover:bg-gray-100 rounded-full cursor-pointer ${
+                  className={`px-10 py-3 bg-white group hover:bg-gray-100 rounded-full cursor-pointer ${
                     !bgChange && checkShow && 'bg-gray-100'
                   }`}
                 >
@@ -287,18 +307,44 @@ function Header() {
                 </div>
                 <div
                   onClick={handleGuestsClick}
-                  className="px-5 py-3 bg-white group hover:bg-gray-100 rounded-full cursor-pointer"
+                  className={`${
+                    guestsShow && 'bg-gray-100'
+                  } px-10 py-3 bg-white group hover:bg-gray-100 rounded-full cursor-pointer`}
                 >
                   <h4 className="group-hover:bg-gray-100">Guests</h4>
                   <p className="outline-none font-light text-gray-500 group-hover:bg-gray-100">
                     Add guests
                   </p>
                 </div>
-                <SearchIcon className="absolute right-1 top-3 h-10 lg:h-12 md:h-8 rounded-full md:text-white  p-2 md:mx-2 md:bg-primary cursor-pointer" />
+
+                {/* expandSearchButton */}
+                {/* <SearchIcon className="h-10 lg:h-12 md:h-8 rounded-full md:text-white  p-2 md:mx-2 md:bg-primary cursor-pointer" /> */}
+                <div
+                  ref={searchButtonRef}
+                  className={`flex ${
+                    expandSearchButton &&
+                    'space-x-2 items-center rounded-full p-3 mr-2 bg-primary text-white'
+                  }`}
+                >
+                  <SearchIcon
+                    className={`${
+                      expandSearchButton
+                        ? 'h-6 w-[60px] transition-all duration-500 ease-linear rounded-full text-white cursor-pointer'
+                        : 'rounded-full md:text-white  p-2 md:mx-2 w-[50px] h-10 lg:h-12 md:h-8 md:bg-primary cursor-pointer transition-all duration-150 ease-linear'
+                    } `}
+                  />
+                  <p
+                    className={`${
+                      expandSearchButton ? 'flex' : 'hidden'
+                    } text-lg`}
+                  >
+                    Search
+                  </p>
+                </div>
               </div>
 
               {/* Location under div */}
-              {locationShow && (
+              {locationShow && locationNull && (
                 <div
                   ref={locationRef}
                   className="bg-white py-8 rounded-2xl mt-5 w-7/12"
@@ -333,6 +379,38 @@ function Header() {
                         Playa del Carmen - Stays
                       </p>
                       <p className="text-gray-400 font-light">Sep 21-28</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+              {locationShow && !locationNull && (
+                <div
+                  ref={locationRef}
+                  className="bg-white py-8 rounded-2xl mt-5 w-7/12"
+                >
+                  <div className="flex flex-col gap-4">
+                    <div
+                      onClick={search}
+                      className="flex space-x-6 items-center px-6"
+                    >
+                      <LocationMarkerIcon className="h-12 p-4 bg-gray-100 rounded-lg" />
+                      <h4 className="font-light">Lodi, CA</h4>
+                    </div>
+                    <div className="flex space-x-6 items-center px-6">
+                      <LocationMarkerIcon className="h-12 p-4 bg-gray-100 rounded-lg" />
+                      <h4 className="font-light">Lodi, CA</h4>
+                    </div>
+                    <div className="flex space-x-6 items-center px-6">
+                      <LocationMarkerIcon className="h-12 p-4 bg-gray-100 rounded-lg" />
+                      <h4 className="font-light">Lodi, CA</h4>
+                    </div>
+                    <div className="flex space-x-6 items-center px-6">
+                      <LocationMarkerIcon className="h-12 p-4 bg-gray-100 rounded-lg" />
+                      <h4 className="font-light">Lodi, CA</h4>
+                    </div>
+                    <div className="flex space-x-6 items-center px-6">
+                      <LocationMarkerIcon className="h-12 p-4 bg-gray-100 rounded-lg" />
+                      <h4 className="font-light">Lodi, CA</h4>
                     </div>
                   </div>
                 </div>

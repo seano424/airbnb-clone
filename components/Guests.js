@@ -6,7 +6,7 @@ function Guests({ header, description }) {
 
   console.log(state)
   return (
-    <div className="flex justify-between border-b py-2">
+    <div className="flex justify-between border-b py-2 select-none">
       <div>
         <h4 className="font-semibold">{header}</h4>
         <p className="font-light text-gray-500">{description}</p>

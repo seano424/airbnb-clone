@@ -3,7 +3,7 @@ import Layout from '@/components/Layout'
 function search() {
   return (
     <Layout>
-      <section className="flex-grow px-6 relative">
+      <section className="flex-grow px-6 relative my-8">
         <p className="text-sm">300+ Stays for 5 Guests</p>
         <h1 className="text-3xl font-semibold mt-2 mb-6">Stays in New York </h1>
         <p>

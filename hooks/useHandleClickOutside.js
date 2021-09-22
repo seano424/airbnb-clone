@@ -7,13 +7,6 @@ function useHandleClickOutside(refTarget, searchTarget, show, event) {
   ) {
     show(false)
   }
-
-  // useEffect(() => {
-  //   document.addEventListener('click', handleClickOutside, true)
-  //   return () => {
-  //     document.removeEventListener('click', handleClickOutside, true)
-  //   }
-  // })
 }
 
 export default useHandleClickOutside

@@ -4,9 +4,11 @@ import Footer from './Footer'
 function Layout({ children }) {
   return (
     <div className="flex min-h-screen flex-col">
-      <main className="flex flex-col h-screen flex-1 relative">
+      <div className="h-24">
         <Header />
-        <div>{children}</div>
+      </div>
+      <main className="flex flex-col h-screen flex-1 relative">
+        <div className="">{children}</div>
       </main>
       <Footer />
     </div>
