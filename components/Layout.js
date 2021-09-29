@@ -8,7 +8,7 @@ function Layout({ children }) {
         <Header />
       </div>
       <main className="flex flex-col h-screen flex-1 relative">
-        <div className="">{children}</div>
+        <div className="flex overflow-hidden">{children}</div>
       </main>
       <Footer />
     </div>

@@ -3,17 +3,18 @@ import { useRouter } from 'next/router'
 import { format } from 'date-fns'
 import Header from '@/components/Header'
 import InfoCard from '@/components/InfoCard'
+import Map from '@/components/Map'
 
 function search({ searchResults }) {
-  console.log(searchResults)
+  console.log('search results', searchResults)
   const router = useRouter()
-  console.log(router.query)
+  // console.log(router.query)
   const { location, startDate, endDate, guests } = router.query
   const range = `${startDate} ${endDate ? `- ${endDate}` : ''}`
   return (
     <Layout>
       <Header placeholder={`${location} | ${range} | ${guests} guests`} />
-      <section className="flex-grow px-6 relative my-8">
+      <section className="px-6 relative my-8">
         <p className="text-sm">
           300+ stays {range} {guests > 0 ? `- ${guests} guests` : ''}
         </p>
@@ -21,7 +22,7 @@ function search({ searchResults }) {
           Stays in {location}{' '}
         </h1>
 
-        <div className="hidden lg:inline-flex gap-3 text-gray-800 whitespace-nowrap pb-5">
+        <div className="flex flex-wrap gap-3 pb-3">
           <p className="button">Cancelation Flexibility</p>
           <p className="button">Type of place</p>
           <p className="button">Price</p>
@@ -45,6 +46,9 @@ function search({ searchResults }) {
             )
           )}
         </div>
+      </section>
+      <section className="hidden xl:inline-flex xl:min-w-[600px]">
+        <Map searchResults={searchResults} />
       </section>
     </Layout>
   )

@@ -236,7 +236,7 @@ function Header({ placeholder }) {
       <header
         className={`${
           atTop && !infoBar && 'bg-opacity-0'
-        } w-screen fixed top-0 z-50 flex justify-between items-center p-5 md:px-10 bg-white transition duration-300 ease-out`}
+        } w-screen fixed top-0 z-50 flex justify-between items-center md:px-10 bg-white transition duration-300 ease-out`}
       >
         {/* left */}
         <div
