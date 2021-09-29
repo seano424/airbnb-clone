@@ -14,7 +14,7 @@ function search({ searchResults }) {
   return (
     <Layout>
       <Header placeholder={`${location} | ${range} | ${guests} guests`} />
-      <section className="px-6 relative my-8">
+      <section className="px-6 relative overflow-x-scroll h-screen">
         <p className="text-sm">
           300+ stays {range} {guests > 0 ? `- ${guests} guests` : ''}
         </p>
@@ -47,7 +47,7 @@ function search({ searchResults }) {
           )}
         </div>
       </section>
-      <section className="hidden xl:inline-flex xl:min-w-[600px]">
+      <section className="hidden xl:inline-flex xl:min-w-[600px] h-screen">
         <Map searchResults={searchResults} />
       </section>
     </Layout>
